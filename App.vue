@@ -1,17 +1,16 @@
 <script>
-	export default {
-		onLaunch: function() {
-			console.log('App Launch')
-		},
-		onShow: function() {
-			console.log('App Show')
-		},
-		onHide: function() {
-			console.log('App Hide')
-		}
-	}
+export default {
+	onLaunch() {},
+	onShow() {},
+	onHide() {},
+	globalData: {}
+};
 </script>
 
-<style>
-	/*每个页面公共css */
+<style lang="scss">
+/* uni-app 引入本地iconfont的正确姿势：https://ask.dcloud.net.cn/article/35443 */
+@import 'static/fonts/iconfont.css';
+page {
+	background-color: $bg-base;
+}
 </style>

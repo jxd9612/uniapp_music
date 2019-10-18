@@ -1,52 +1,80 @@
 <template>
-	<view class="content">
-		<image class="logo" src="/static/logo.png"></image>
-		<view class="text-area">
-			<text class="title">{{title}}</text>
+	<view class="container">
+		<!-- 头部分 -->
+		<view class="head">
+			<view class="head-info"><text class="iconfont icon-persion-info"></text></view>
+			<view class="head-flag">
+				<text class="iconfont icon-yinle1"></text>
+				<text class="iconfont icon-xingzhuang"></text>
+			</view>
+			<view class="head-search"><text class="iconfont icon-search"></text></view>
+		</view>
+		<!-- tab部分 -->
+		<view class="tab">
+			<view class="tab-mine active">我的</view>
+			<view class="tab-find">发现</view>
+			<view class="tab-video">视频</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				title: 'Hello'
-			}
-		},
-		onLoad() {
-
-		},
-		methods: {
-
-		}
-	}
+export default {
+	data() {
+		return {};
+	},
+	onLoad() {},
+	methods: {}
+};
 </script>
 
-<style>
-	.content {
+<style lang="scss" scoped>
+.container {
+	.head {
+		height: 80upx;
+		line-height: 80upx;
+		background-color: $bg-black;
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+		.head-info,
+		.head-flag,
+		.head-search {
+			color: $text-icon;
+			text-align: center;
+			& > text {
+				font-size: $img-size-base;
+			}
+		}
+		.head-info {
+			flex: 1;
+		}
+		.head-flag {
+			flex: 3;
+			color: $text-inverse;
+		}
+		.head-search {
+			flex: 1;
+		}
 	}
-
-	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin-top: 200rpx;
-		margin-left: auto;
-		margin-right: auto;
-		margin-bottom: 50rpx;
-	}
-
-	.text-area {
+	.tab {
+		height: 100upx;
+		line-height: 100upx;
+		background-color: $bg-black;
 		display: flex;
-		justify-content: center;
+		& > view {
+			color: $text-inverse;
+			font-size: $font-size-lg;
+			flex: 1;
+			text-align: center;
+			margin: 0 50upx;
+		}
+		.tab-mine {
+		}
+		.tab-find {
+		}
+		.tab-video {
+		}
+		.active {
+		}
 	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
-	}
+}
 </style>
