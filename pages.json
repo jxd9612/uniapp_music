@@ -1,7 +1,14 @@
 {
 	"pages": [{
-		"path": "pages/index/index"
-	}],
+			"path": "pages/index/index"
+		},
+		{
+			"path": "pages/find/playList/playList",
+			"style": {
+				"navigationBarTitleText":"歌单详情"
+			}
+		}
+	],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "溜达音乐",
