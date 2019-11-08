@@ -2,82 +2,45 @@
 	<view class="container">
 		<!-- tab -->
 		<view class="tab">
-			<view class="tab-mine">我的</view>
-			<view class="tab-find active">发现</view>
-			<view class="tab-video">视频</view>
-		</view>
-		<view style="height: 100upx;"></view>
-		<!-- banner -->
-		<swiper class="card-swiper" :circular="true" :autoplay="true" @change="cardSwiper">
-			<swiper-item v-for="(item, index) in bannerList" :key="index" :class="cardCur == index ? 'cur' : ''">
-				<view class="swiper-item"><image :src="item.imageUrl" mode="aspectFill"></image></view>
-			</swiper-item>
-		</swiper>
-		<!-- 菜单 -->
-		<view class="menu">
-			<!-- 菜单导航列表 -->
-			<view class="menu-nav">
-				<view class="menu-nav-item">
-					<image src="/static/images/meirituijian.png"></image>
-					<text>每日推荐</text>
-				</view>
-				<view class="menu-nav-item">
-					<image src="/static/images/musicList.png"></image>
-					<text>音乐列表</text>
-				</view>
-				<view class="menu-nav-item">
-					<image src="/static/images/rankingList.png"></image>
-					<text>排行榜</text>
-				</view>
-				<view class="menu-nav-item">
-					<image src="/static/images/musicRadio.png"></image>
-					<text>音乐电台</text>
-				</view>
-				<view class="menu-nav-item">
-					<image src="/static/images/musicVedeo.png"></image>
-					<text>音乐视频</text>
-				</view>
+			<view class="tab-item" :class="currentIndex == 0 ? 'active' : ''" @click="tabClick(0)">
+				<text>我的</text>
+				<text class="iconfont icon-arrowFill-top"></text>
 			</view>
-			<!-- 推荐歌单 -->
-			<view class="menu-playlist">
-				<view class="menu-playlist-head">
-					<view class="head-title"><text>推荐歌单</text></view>
-					<view class="head-more">
-						<text>更多</text>
-						<text class="iconfont icon-arrowFill-right"></text>
-					</view>
-				</view>
-				<view class="menu-playlist-content">
-					<view
-						class="content-item"
-						v-if="personalized"
-						v-for="(item, index) in personalized"
-						:key="index"
-						@click="toPlayList(item.id)"
-					>
-						<image :src="item.picUrl" mode="aspectFill"></image>
-						<text>{{ item.name }}</text>
-					</view>
-					<view class="content-none" v-else>没有数据下显示</view>
-				</view>
+			<view class="tab-item" :class="currentIndex == 1 ? 'active' : ''" @click="tabClick(1)">
+				<text>发现</text>
+				<text class="iconfont icon-arrowFill-top"></text>
 			</view>
-			<!-- 新唱片 -->
-			<view class="menu-record"></view>
+			<view class="tab-item" :class="currentIndex == 2 ? 'active' : ''" @click="tabClick(2)">
+				<text>视频</text>
+				<text class="iconfont icon-arrowFill-top"></text>
+			</view>
 		</view>
+		<view style="height: 80upx;"></view>
+
+		<view v-show="currentIndex == 0"><mine></mine></view>
+		<view v-show="currentIndex == 1"><find :bannerList="bannerList" :personalized="personalized"></find></view>
+		<view v-show="currentIndex == 2"><videos></videos></view>
 	</view>
 </template>
 
 <script>
 import { getBanner, getPersonalized } from 'api/find.js';
-import Loading from 'components/loading/loading.vue'
+import Loading from 'components/loading/loading.vue';
+import Find from '../find/index.vue';
+import Mine from '../mine/index.vue';
+import Videos from '../video/index.vue';
+
+// 获取推荐歌单的数量
+const LIMIT = 6;
+// 0-pc、1-android、2-iphone、3-ipad,统一 安卓
+const TYPE = 1;
 
 export default {
 	data() {
 		return {
-			cardCur: 0, // 默认轮播索引
 			bannerList: null, // banner数据列表
-			limit: 6, // 获取推荐歌单的数量参数
-			personalized: null // 推荐歌单列表
+			personalized: null, // 推荐歌单列表
+			currentIndex: 1
 		};
 	},
 	onLoad() {
@@ -85,151 +48,80 @@ export default {
 	},
 	methods: {
 		init() {
+			this.initFindData();
+		},
+		// 初始化发现模块的数据
+		initFindData() {
 			this.handleBanner();
 			this.handlePersonalized();
 		},
 		// 处理banner信息
 		async handleBanner() {
-			// 0-pc、1-android、2-iphone、3-ipad
 			let reqData = {};
-			switch (uni.getSystemInfoSync().platform) {
-				case 'android':
-					reqData.type = 1;
-					break;
-				case 'ios':
-					reqData.type = 2;
-					break;
-				default:
-					reqData.type = 0;
-					break;
-			}
+			reqData.type = TYPE;
 			this.bannerList = await getBanner(reqData);
 		},
 		// 处理推荐歌单信息
 		async handlePersonalized() {
 			let reqData = {};
-			reqData.limit = this.limit;
+			reqData.limit = LIMIT;
 			this.personalized = await getPersonalized(reqData);
 		},
-		cardSwiper(e) {
-			this.cardCur = e.detail.current;
-		},
-		// 点击歌单，跳转到歌单详情页面
-		toPlayList(id) {
-			uni.navigateTo({
-				url: `../find/playList/playList?id=${id}`
-			});
+		// 切换tab
+		tabClick(index) {
+			this.currentIndex = index;
+			switch (index) {
+				case 0:
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+			}
 		}
 	},
-	components: { Loading }
+	components: { Loading, Find, Mine, Videos }
 };
 </script>
 
 <style lang="scss" scoped>
 .container {
 	.tab {
-		position: fixed;
 		width: 100%;
-		z-index: 9;
-		height: 100upx;
-		line-height: 100upx;
-		background-color: $bg-black;
+		height: 80upx;
+		position: fixed;
 		display: flex;
-		& > view {
-			color: $text-inverse;
-			font-size: $font-size-lg;
+		z-index: 9;
+		background-color: $bg-black;
+		.tab-item {
 			flex: 1;
+			position: relative;
+			display: flex;
+			flex-direction: column;
 			text-align: center;
-			margin: 0 50upx;
-		}
-		.tab-mine {
-		}
-		.tab-find {
-		}
-		.tab-video {
+			padding-top: 10upx;
+			text {
+				font-size: $font-size-lg;
+				color: $text-inverse;
+				transition: all 0.1s ease;
+				&:last-child {
+					position: absolute;
+					bottom: -15%;
+					left: 50%;
+					transform: translateX(-50%);
+					opacity: 0;
+				}
+			}
 		}
 		.active {
-		}
-	}
-	.menu {
-		width: 700upx;
-		margin-left: 25upx;
-		.menu-nav {
-			width: 100%;
-			display: flex;
-			justify-content: space-around;
-			padding-bottom: 30upx;
-			border-bottom: 2upx solid $border-base;
-			.menu-nav-item {
-				width: 140upx;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				text-align: center;
-				image {
-					width: 80upx;
-					height: 80upx;
+			text {
+				&:first-child {
+					transform: scale(1.2);
 				}
-				text {
-					margin-top: 10upx;
-					font-size: $font-size-sm;
+				&:last-child {
+					opacity: 1;
 				}
 			}
-		}
-		.menu-playlist {
-			width: 100%;
-			padding-top: 30upx;
-			.menu-playlist-head {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				text-align: center;
-				padding: 0 10upx 20upx 10upx;
-				.head-title {
-					font-size: $font-size-lg-l;
-					font-weight: bold;
-					color: $text-base;
-				}
-				.head-more {
-					display: flex;
-					align-items: center;
-					color: $text-grey;
-					text {
-						font-size: $font-size-sm;
-					}
-				}
-			}
-			.menu-playlist-content {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: space-between;
-				.content-item {
-					width: 210upx;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					text-align: center;
-					margin: 0 10upx 35upx 10upx;
-					text {
-						margin-top: 15upx;
-						font-size: $font-size-sm;
-						color: $text-grey;
-						text-overflow: -o-ellipsis-lastline;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						display: -webkit-box;
-						-webkit-line-clamp: 2;
-						-webkit-box-orient: vertical;
-					}
-					image {
-						width: 100%;
-						height: 210upx;
-						border-radius: 10upx;
-					}
-				}
-			}
-		}
-		.menu-record {
 		}
 	}
 }
