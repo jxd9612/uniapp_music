@@ -1,6 +1,7 @@
 // 接口地址
 export const address = {
-	api: 'http://localhost:3000'
+	// api: 'http://localhost:3000',
+	api: 'https://www.jxd9612.world:3000'
 }
 
 // 请求头
