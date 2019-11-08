@@ -6,7 +6,7 @@ import {
 	SUCCESS
 } from './config.js'
 
-// 调用此接口 , 可获取 banner( 轮播图 ) 数据
+// 调用此接口 , 可获取 banner( 轮播图 ) 数据，type，0-pc、1-android、2-iphone、3-ipad
 export async function getBanner(reqData) {
 	try {
 		let res = await requestGet('/banner', reqData);
@@ -17,7 +17,7 @@ export async function getBanner(reqData) {
 		}
 	} catch (e) {
 		// 接口问题 或 网络问题
-		console.log('getBanner接口异常', e);
+		console.log('getBanner异常', e);
 	}
 }
 
@@ -32,7 +32,7 @@ export async function getPersonalized(reqData) {
 		}
 	} catch (e) {
 		// 接口问题 或 网络问题
-		console.log('getPersonalized接口异常', e);
+		console.log('getPersonalized异常', e);
 	}
 }
 
@@ -47,6 +47,36 @@ export async function getPlayListDetail(reqData) {
 		}
 	} catch (e) {
 		// 接口问题 或 网络问题
-		console.log('getPlayListDetail接口异常', e);
+		console.log('getPlayListDetail异常', e);
+	}
+}
+
+// 获取总的歌单分类 classification --- n. 分类；类别，等级
+export async function getAllCat() {
+	try {
+		let res = await requestGet('/playlist/catlist');
+		if (res.data.code == SUCCESS) {
+			return res.data;
+		} else {
+			throw new Error();
+		}
+	} catch (e) {
+		// 接口问题 或 网络问题
+		console.log('getAllCat异常', e);
+	}
+}
+
+// 获取热门歌单分类
+export async function getHotCat() {
+	try {
+		let res = await requestGet('/playlist/hot');
+		if (res.data.code == SUCCESS) {
+			return res.data.tags;
+		} else {
+			throw new Error();
+		}
+	} catch (e) {
+		// 接口问题 或 网络问题
+		console.log('getHotCat异常', e);
 	}
 }
