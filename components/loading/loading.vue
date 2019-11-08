@@ -15,8 +15,8 @@
 	.middle,
 	.inner {
 		border: 6upx solid transparent;
-		border-top-color: #F37B1D;
-		border-right-color: #F37B1D;
+		border-top-color: skyblue;
+		border-right-color: skyblue;
 		border-radius: 50%;
 		position: absolute;
 		top: 50%;
