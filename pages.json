@@ -3,9 +3,15 @@
 			"path": "pages/index/index"
 		},
 		{
-			"path": "pages/find/playList/playList",
+			"path": "pages/find/playList/playListDetail",
 			"style": {
-				"navigationBarTitleText":"歌单详情"
+				"navigationBarTitleText": "歌单详情"
+			}
+		},
+		{
+			"path": "pages/find/playList/morePlayList",
+			"style": {
+				"navigationBarTitleText": "更多歌单"
 			}
 		}
 	],

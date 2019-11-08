@@ -1,15 +1,14 @@
 <template>
 	<view class="container">
-		<!-- 遮层 -->
-		<view class="mask">
-			<view></view>
-			<image :src="playlist.coverImgUrl" mode="aspectFill"></image>
-		</view>
-
 		<!-- 数据加载完毕 -->
 		<view v-if="playlist">
+			<!-- 遮层 -->
+			<view class="mask">
+				<view></view>
+				<image :src="playlist.coverImgUrl" mode="aspectFill"></image>
+			</view>
 			<!-- 头部显示部分 -->
-			<view class="header">
+			<view class="header" ref="header">
 				<view class="header-img"><image :src="playlist.coverImgUrl" mode="aspectFill"></image></view>
 				<view class="header-content">
 					<view class="header-content-name">{{ playlist.name }}</view>
@@ -28,28 +27,42 @@
 			</view>
 			<!-- 歌曲列表 -->
 			<view class="content">
-				<view class="content-item">
-					<view class="content-item-index">1</view>
+				<view class="content-option">
+					<view class="content-option-play">
+						<text class="iconfont icon-bofang"></text>
+						<text>播放全部</text>
+						<text>(共{{ playlist.trackCount }}首)</text>
+					</view>
+					<view class="content-option-collect">
+						<text class="iconfont icon-add"></text>
+						<!-- 用计算属性代替 -->
+						<text>收藏({{ subscribedCount }})</text>
+					</view>
+				</view>
+
+				<view class="content-item" v-for="(item, index) in playlist.tracks" :key="index">
+					<view class="content-item-index">{{ index + 1 }}</view>
 					<view class="content-item-detail">
 						<view class="detail-name">
-							<text>叶子</text>
-							<text>(电视剧《蔷薇之恋》片尾曲)</text>
+							<text>{{ item.name }}</text>
+							<!-- 直接处理 -->
+							<text>{{ item.alia.length == 0 ? '' : `(${item.alia[0]})` }}</text>
 						</view>
 						<view class="detail-desc">
-							<text v-show="true">会员</text>
-							<text v-show="true">独家</text>
-							<text v-show="true">无损</text>
-							<text>阿桑-受了点伤</text>
+							<text v-show="false">会员</text>
+							<text v-show="item.copyright == 0">独家</text>
+							<text v-show="false">无损</text>
+							<!-- 没有过滤器，都这么处理了 -->
+							<text>{{ item.ar[0].name }}-{{ item.al.name }}</text>
 						</view>
 					</view>
-					<text class="iconfont icon-shipinbofang" style="right: 100upx;" v-show="true"></text>
+					<text class="iconfont icon-shipinbofang" style="right: 100upx;" v-show="item.mv != 0"></text>
 					<text class="iconfont icon-liebiao" style="right: 30upx;"></text>
 				</view>
 			</view>
 		</view>
-
 		<!-- 未加载完毕 -->
-		<view v-else>加载中...</view>
+		<view class="loading-wrapper" v-else><loading></loading></view>
 	</view>
 </template>
 
@@ -77,6 +90,20 @@ export default {
 			let reqData = {};
 			reqData.id = this.id;
 			this.playlist = await getPlayListDetail(reqData);
+		},
+		// 处理歌曲描述
+		dealAlia(alia) {
+			if (alia.length != 0) return `(${alia[0]})`;
+		}
+	},
+	computed: {
+		// 收藏数量，uniapp过滤器对小程序兼容的不好
+		subscribedCount() {
+			if (this.playlist) {
+				return this.playlist.subscribedCount >= 10000
+					? (this.playlist.subscribedCount / 10000).toFixed(1) + '万'
+					: this.playlist.subscribedCount;
+			}
 		}
 	},
 	components: { Loading }
@@ -91,7 +118,6 @@ export default {
 		left: 0;
 		width: 100%;
 		height: 100%;
-		z-index: -1;
 		view {
 			width: 100%;
 			height: 100%;
@@ -112,12 +138,12 @@ export default {
 		width: 700upx;
 		height: 250upx;
 		margin: 20upx auto;
+		position: relative;
 		display: flex;
 		color: $text-inverse;
 		.header-img {
 			width: 250upx;
 			margin-right: 30upx;
-			position: relative;
 			image {
 				width: 100%;
 				height: 100%;
@@ -189,11 +215,59 @@ export default {
 		}
 	}
 	.content {
+		margin-top: 80upx;
+		width: 100%;
+		color: $text-inverse;
+		position: relative;
+		.content-option {
+			padding: 0 40upx;
+			margin-bottom: 30upx;
+			display: flex;
+			justify-content: space-between;
+			view {
+				display: flex;
+				align-items: center;
+			}
+			.content-option-play {
+				text {
+					font-size: $font-size-lg;
+					&:first-child {
+						padding-right: 15upx;
+						font-weight: bold;
+					}
+					&:last-child {
+						padding-left: 5upx;
+						opacity: 0.7;
+					}
+				}
+			}
+			.content-option-collect {
+				background-color: #1cbbb4;
+				border-radius: 40upx;
+				padding: 20upx;
+				text {
+					font-size: $font-size-base;
+					&:first-child {
+						padding-right: 10upx;
+					}
+				}
+				&:active {
+					opacity: 0.7;
+					transform: translate(1upx, 1upx);
+				}
+			}
+		}
 		.content-item {
 			position: relative;
 			display: flex;
 			align-items: center;
 			color: $text-inverse;
+			margin: 20upx 0;
+			&:active {
+				opacity: 0.7;
+				transform: translate(1upx, 1upx);
+				background-color: rgba(0, 0, 0, 0.1);
+			}
 			& > text {
 				position: absolute;
 				top: 50%;
@@ -201,10 +275,11 @@ export default {
 				font-size: $font-size-lg-l;
 			}
 			.content-item-index {
-				padding: 0 40upx;
+				width: 120upx;
+				text-align: center;
 			}
 			.content-item-detail {
-				height: 100upx;
+				height: 80upx;
 				width: 450upx;
 				display: flex;
 				flex-direction: column;
@@ -227,24 +302,24 @@ export default {
 					align-items: center;
 					text {
 						font-size: $font-size-sm-ss;
-						margin-right: 5upx;
+						margin-right: 10upx;
 						&:nth-child(1) {
 							padding: 0 5upx;
 							border-radius: 5upx;
-							border: 2upx solid #F37B1D;
-							color: #F37B1D;
+							border: 2upx solid #f37b1d;
+							color: #f37b1d;
 						}
 						&:nth-child(2) {
 							padding: 0 5upx;
 							border-radius: 5upx;
-							border: 2upx solid #DD524D;
-							color: #DD524D;
+							border: 2upx solid #dd524d;
+							color: #dd524d;
 						}
 						&:nth-child(3) {
 							padding: 0 5upx;
 							border-radius: 5upx;
-							border: 2upx solid #F37B1D;
-							color: #F37B1D;
+							border: 2upx solid #f37b1d;
+							color: #f37b1d;
 						}
 						&:nth-child(4) {
 							font-size: $font-size-sm;
@@ -254,6 +329,12 @@ export default {
 				}
 			}
 		}
+	}
+	.loading-wrapper {
+		position: fixed;
+		top: 20%;
+		left: 50%;
+		transform: translateY(-50%);
 	}
 }
 </style>
